@@ -1,0 +1,35 @@
+public class UpdateInputSample
+{
+    public async Task<Input> UpdateInputAsync(
+         string projectId, string locationId, string inputId)
+    {
+        // Create the client.
+        LivestreamServiceClient client = LivestreamServiceClient.Create();
+
+        UpdateInputRequest request = new UpdateInputRequest
+        {
+            Input = new Input
+            {
+                InputName = InputName.FromProjectLocationInput(projectId, locationId, inputId),
+                PreprocessingConfig = new PreprocessingConfig
+                {
+                    Crop = new PreprocessingConfig.Types.Crop
+                    {
+                        TopPixels = 5,
+                        BottomPixels = 5
+                    }
+                }
+            },
+            UpdateMask = new FieldMask { Paths = { "preprocessing_config" } }
+        };
+
+        // Make the request.
+        Operation<Input, OperationMetadata> response = await client.UpdateInputAsync(request);
+
+        // Poll until the returned long-running operation is complete.
+        Operation<Input, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
+
+        // Retrieve the operation result.
+        return completedResponse.Result;
+    }
+}
